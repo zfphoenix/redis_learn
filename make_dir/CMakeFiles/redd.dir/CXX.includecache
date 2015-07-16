@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/felix/redis/test/src/redis.cc
+redis.h
+/home/felix/redis/test/src/redis.h
+
+/home/felix/redis/test/src/redis.h
+iostream
+-
+string
+-
+hiredis/hiredis.h
+-
+

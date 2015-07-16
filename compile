@@ -1,0 +1,26 @@
+#!/bin/bash
+cur_path=`pwd`
+dir_name='make_dir'
+des_pth=$cur_path/$dir_name
+if [ -d $dir_name ] ; then
+:
+else
+mkdir $dir_name
+fi
+
+cd $dir_name
+
+cmake ../
+
+if [ $? -eq 0 ];then
+echo "succ to generete makefile"
+else
+echo "fail to generate makefile"
+exit 
+fi
+
+cd $des_pth
+
+make $*
+
+cp redd ..

@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/redd.dir/src/redis.cc.o  -o redd -rdynamic -lhiredis 
