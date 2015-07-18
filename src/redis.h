@@ -13,6 +13,9 @@ extern "C" {
 //Max db number 255 default
 typedef uint8_t		DBIndex;
 
+//Redis class hold a connection with redis-server
+//one Redis object is just manipulated on one specified db_index
+//if wanna change to other db, better create one more object
 class Redis {
 public:
 	Redis(std::string ip, uint32_t port, DBIndex db):
@@ -36,6 +39,10 @@ public:
 	}
 
 	bool select() {
+	//TODO
+	}
+
+	bool ping() {
 	//TODO
 	}
 
