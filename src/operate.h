@@ -8,8 +8,8 @@ extern "C" {
 #include <stdint.h>
 }
 typedef std::string KEY;
-typedef uint8_t		DBIndex;
 
+//全局管理--待定
 class Operate {
 public:
 	Operate(REDIS_OPTYPE type, redisContext* ctx, 
@@ -24,9 +24,9 @@ protected:
 	REDIS_OPTYPE  type_;
 	KEY			  key_;
 	DBIndex		  db_id_;
-private:
+/*private:
 	void* operator new(size_t);
-	void operator delete(void*);
+	void operator delete(void*);*/
 };
 
 class NormSetOperate : public Operate {

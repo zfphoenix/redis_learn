@@ -2,42 +2,57 @@
 #ifndef _RED_REDIS_H_
 #define _RED_REDIS_H_
 #include <iostream>
-#include <string>
 
 extern "C" {
+#include <stdint.h>
 #include <hiredis/hiredis.h>
 }
 
+#include "log.h"
+
+//Max db number 255 default
+typedef uint8_t		DBIndex;
+
 class Redis {
 public:
-	Redis() {}
+	Redis(std::string ip, uint32_t port, DBIndex db):
+		ip_(ip), port_(port), db_id_(db)  {}
 	~Redis() {
 		connect_ = NULL;
 		reply_	 = NULL;
 	}
 public:
-	bool connect(std::string host, int port) {
+	bool connect(){
 		connect_ = redisConnect(host.c_str(), port);
 		if (connect_ && connect_->err) {
-			std::cout << "connect error : " << connect_->errstr << std::endl;
-			return 0;
+			MLOG->Error("CONNECT ERR err %d", connect_->err);
+			return false;
 		}
-		return 1;
+		return true;
 	}
 
-	std::string get(std::string key) {
-		reply_ = (redisReply*)redisCommand(connect_, "GET %s", key.c_str());
-		std::string str = reply_->str;
-		freeReplyObject(reply_);
-		return str;
+	bool auth() {
+	//TODO
 	}
 
-	void set(std::string key, std::string value) {
-		redisCommand(connect_, "SET %s %s", key.c_str(), value.c_str());
+	bool select() {
+	//TODO
 	}
+
+	redisReply* Reply() const {
+		return reply_;
+	}
+
+	redisContext* Connect() const {
+		return connect_;
+	}
+
 private:
+	std::string   ip_;
+	uint32_t	  port_;
 	redisContext* connect_;
 	redisReply*   reply_;
+	DBIndex		  db_id_;
 };
 
 #endif // _RED_REDIS_H_
