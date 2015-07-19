@@ -19,6 +19,7 @@ bool Container::check_status() {
 		return false;
 	} else if (REPLY_TYPE_ERROR == redis_->Reply()->type) {
 		MLOG->Error("Reply ERR err is %s", redis_->Reply()->str);
+		return false;
 	} else {
 		return true;
 	}
