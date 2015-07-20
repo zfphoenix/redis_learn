@@ -22,8 +22,7 @@ public:
 	}
 	//release & check should be defined in redis.h 
 	//void release();
-
-	//after operate on db and invoke this func 
+//after operate on db and invoke this func 
 	//bool check_status();
 	/*
 	 *@brief    check if key exists
@@ -71,15 +70,15 @@ public:
 	/*
 	*@brief		set if not exists
 	*@command	SETNX [key] [value]
-	*@return	1 succ, else  0
+	*@return	0 succ, else  -1
 	*/
 	int SetNx(Key k, Value v);
 	//multi set
-	int MSet(KVSet kvs);
+	int MSet(KVSet& kvs);
 	//multi get
-	ValueSet MGet(KeySet ks);
+	ValueSet MGet(KeySet& ks);
 	//multi set if not exists
-	int MSetNx(KVSet kvs);
+	int MSetNx(KVSet& kvs);
 	//if k's value exists, update value with new_v
 	//else set [k - new_v]
 	int GetSet(Key k, Value new_v);
