@@ -2,7 +2,6 @@
 #define SINGLETON_H_
 
 #include <cassert>
-#define NULL (0)
 //make specified class to create one instance only
 //Singleton is used to manage it
 

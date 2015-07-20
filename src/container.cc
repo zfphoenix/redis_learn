@@ -2,6 +2,7 @@
 #include "redis.h"
 #include "log.h"
 
+/*
 void Container::release() {
 	if (redis_->Reply()) {
 		freeReplyObject(redis_->Reply());
@@ -23,5 +24,5 @@ bool Container::check_status() {
 	} else {
 		return true;
 	}
-}
+}*/
 

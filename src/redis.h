@@ -2,7 +2,7 @@
 #ifndef _RED_REDIS_H_
 #define _RED_REDIS_H_
 #include <iostream>
-
+#include <cassert>
 extern "C" {
 #include <stdint.h>
 #include <hiredis/hiredis.h>
@@ -19,46 +19,45 @@ typedef uint8_t		DBIndex;
 class Redis {
 public:
 	Redis(std::string ip, uint32_t port, DBIndex db):
-		ip_(ip), port_(port), db_id_(db)  {}
+		ip_(ip), port_(port), db_id_(db)  {
+			assert(connect() && select());
+		}
 	~Redis() {
+		redisFree(connect_);
 		connect_ = NULL;
-		reply_	 = NULL;
 	}
 public:
-	bool connect(){
-		connect_ = redisConnect(host.c_str(), port);
-		if (connect_ && connect_->err) {
+	bool connect() {
+		connect_ = redisConnect(ip_.c_str(), port_);
+		if (!connect_ || connect_->err) {
 			MLOG->Error("CONNECT ERR err %d", connect_->err);
 			return false;
 		}
 		return true;
 	}
-
-	bool auth() {
-	//TODO
+	
+	bool reconnect() {
+		redisFree(connect_);
+		connect_ = NULL;
+		return connect();
 	}
 
-	bool select() {
-	//TODO
-	}
+	bool auth(std::string pwd) ;
 
-	bool ping() {
-	//TODO
-	}
+	bool select() ;
 
-	redisReply* Reply() const {
-		return reply_;
-	}
+	bool ping() ;
 
-	redisContext* Connect() const {
-		return connect_;
-	}
+	int check(redisReply* reply);
 
+	void release(redisReply*);
+
+	void* execute(const char* format,...);
+	
 private:
 	std::string   ip_;
 	uint32_t	  port_;
 	redisContext* connect_;
-	redisReply*   reply_;
 	DBIndex		  db_id_;
 };
 

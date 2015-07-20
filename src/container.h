@@ -11,10 +11,6 @@ extern "C" {
 
 class Redis;
 
-enum RStatus {
-
-
-};
 
 class Container {
 public:
@@ -22,17 +18,25 @@ public:
 
 	}
 	virtual ~Container() {
-		release();
+	//	release();
 	}
-	
-	void release();
+	//release & check should be defined in redis.h 
+	//void release();
 
 	//after operate on db and invoke this func 
-	bool check_status();
- 	
-private:
-	Redis *redis_;
+	//bool check_status();
+	/*
+	 *@brief    check if key exists
+	 *@command  EXISTS [key]
+	 *@return   1 exists , 0 not exists
+	 */
+	//bool find_key(std::string key);
 
+protected:
+	Redis *redis_;
+private:
+	Container(const Container*);
+	void operator=(const Container*);
 };
 
 //KeyValue class used to manipulate normal
@@ -52,8 +56,11 @@ public;
 
 	}
 	
-	//set key value if not exist
-	//else update key's value with 'v'
+	/*
+	 *@brief	set key value if not exist else update key's value with 'v'
+	 *@command	SET [key] [value]
+	 *@return	0 succ, else err-code
+	 */
 	int Set(Key k, Value v);
 	//get key's value if exist
 	Value Get(Key k);
