@@ -14,7 +14,7 @@ class Redis;
 
 class Container {
 public:
-	Container(Redis* redis) {
+	Container(Redis* redis):redis_(redis) {
 
 	}
 	virtual ~Container() {
@@ -48,10 +48,10 @@ public:
 	typedef std::vector< std::string >				KeySet;
 	typedef std::vector< std::string >				ValueSet;
 	typedef KeySet::iterator						KeySetItr;
-	typedef Valueset::iterator						ValueSetItr;
+	typedef ValueSet::iterator						ValueSetItr;
 	typedef std::vector< std::pair< Key, Value > >	KVSet;
-	typedef KVSet:iterator					        KVSetItr;
-public;
+	typedef KVSet::iterator					        KVSetItr;
+public:
 	RedString(Redis* redis):Container(redis) {
 
 	}
@@ -62,14 +62,22 @@ public;
 	 *@return	0 succ, else err-code
 	 */
 	int Set(Key k, Value v);
-	//get key's value if exist
+	/*
+	**@brief	get key's value if exist
+	**@command	GET [key]
+	**@return	value
+	*/
 	Value Get(Key k);
-	//set if not exists
+	/*
+	*@brief		set if not exists
+	*@command	SETNX [key] [value]
+	*@return	1 succ, else  0
+	*/
 	int SetNx(Key k, Value v);
 	//multi set
 	int MSet(KVSet kvs);
 	//multi get
-	MValue MGet(KeySet ks);
+	ValueSet MGet(KeySet ks);
 	//multi set if not exists
 	int MSetNx(KVSet kvs);
 	//if k's value exists, update value with new_v
@@ -106,13 +114,13 @@ public:
 	typedef	std::string								 Key;
 	typedef std::string								 Field;
 	typedef std::string								 Value;
-	typedef std::vecotr< Key >						 FieldSet;
+	typedef std::vector< Key >						 FieldSet;
 	typedef FieldSet::iterator						 FieldSetItr;
 	typedef FieldSet								 ValueSet;
 	typedef FieldSetItr								 ValueSetItr;
 	typedef std::vector< std::pair< Field, Value > > Dict;
 	typedef Dict::iterator							 DictItr;
-	typedef Dict									 FVSet
+	typedef Dict									 FVSet;
 	typedef DictItr									 FVSetItr;
 };
 

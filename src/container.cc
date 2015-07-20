@@ -26,3 +26,15 @@ bool Container::check_status() {
 	}
 }*/
 
+
+RedString::Value RedString::Get(Key k) {
+	redisReply* reply = (redisReply*)redis_->execute("GET %s", k.c_str());
+	Value val("");
+	if (reply) {
+		if (reply->type == REDIS_REPLY_STRING)
+			val = std::string(reply->str);
+		MLOG->Debug("val is %s", val.c_str());
+	}
+	freeReplyObject(reply);
+	return val;
+}
