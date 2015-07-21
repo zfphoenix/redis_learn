@@ -10,11 +10,11 @@ class Log : public Singleton<Log> {
 public:
 	inline void Debug(const char*,...);
 
-	inline void Info(std::string...);
+	inline void Info(const char*,...);
 
-	inline void Trace(std::string...);
+	inline void Trace(const char*,...);
 
-	inline void Error(std::string...);
+	inline void Error(const char*,...);
 };
 
 //TODO need implementation
@@ -27,15 +27,15 @@ void Log::Debug(const char* str,...) {
 	va_end(args);
 }
 
-void Log::Info(std::string...) {
+void Log::Info(const char*,...) {
 
 }
 
-void Log::Trace(std::string...) {
+void Log::Trace(const char*,...) {
 
 }
 
-void Log::Error(std::string...) {
+void Log::Error(const char*,...) {
 
 }
 

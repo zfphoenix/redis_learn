@@ -1,3 +1,7 @@
+//
+//Redis server v=2.8.4 sha=00000000:0 malloc=jemalloc-3.4.1 bits=32 build=8f6097d7914679ca
+//
+//
 #ifndef KEYVALUE_H_
 #define KEYVALUE_H_
 
@@ -17,19 +21,8 @@ public:
 
 	}
 	virtual ~Container() {
-	//	release();
 	}
-	//release & check should be defined in redis.h 
-	//void release();
-//after operate on db and invoke this func 
-	//bool check_status();
-	/*
-	 *@brief    check if key exists
-	 *@command  EXISTS [key]
-	 *@return   1 exists , 0 not exists
-	 */
-	//bool find_key(std::string key);
-
+	
 protected:
 	Redis *redis_;
 private:
@@ -152,8 +145,81 @@ public:
 	typedef Dict::iterator							 DictItr;
 	typedef Dict									 FVSet;
 	typedef DictItr									 FVSetItr;
+public:
+	RedHash(Redis* redis): Container(redis) {
+	
+	}
+public:
+	/*
+	 *@brief	check if exists a hash structuce named 'k' and if exists a field
+	 **			named 'f'
+	 *@command	HEXISTS [key] [field]
+	 *@return	0 succ, else -1
+	 */
+	int HExists(Key k, Field f);
+	/*
+	*@brief		Get the 'f' filed value which in 'k' hash
+	*@command	HGET [key] [field]
+	*@return	value with reply, else empty value
+	*/
+	Value HGet(Key k, Field f);
+	/*
+	*@brief		delete field set which in the 'k' hash
+	*@command	HDEL [key] [field1] [field2] ...
+	*@return	0 succ, else -1
+	*/
+	int HDel(Key k, FieldSet& fs);
+	/*
+	*@brief		get all field and value of 'k' hash
+	*@command	HGETALL [key]
+	*@return	Dict with reply, else empty Dict
+	*/
+	Dict HGetAll(Key k);
+	/*
+	*@brief		get all fileld name in 'k' hash
+	*@command	HKEYS [key]
+	*@return	FieldSet with reply, else empty fieldSet
+	*/
+	FieldSet HKeys(Key k);
+	/*
+	*@brief		get field number of 'k' hash
+	*@command	HLEN [key]
+	*@return	integer with reply
+	*/
+	size_t HLen(Key k);
+	/*
+	*@brief		get correspond value of 'fs' which in  'k' hash
+	*@command	HMGET [key] [field1] [field2]...
+	*@return	ValueSet with reply ,else empley ValueSet
+	*/
+	Dict HMGet(Key k, FieldSet& fs);
+	/*
+	*@brief		atomic set multic filed - value of 'k' hash, 
+	**			if 'k' not exist, create it
+	*@command	HMSET [key] [filed1] [value1] [field2] [value2] ...
+	*@return	0 succ, else -1
+	*/
+	int HMSet(Key k, FVSet& fvs);
+	/*
+	*@breif		set 'f' field's value with 'v' which in 'k' hash
+	*@command	HSET [key] [field] [value]
+	*@return	0 override old value, 1 create new filed, -1 failed
+	*/
+	int HSet(Key k, Field f, Value v);
+	/*
+	*@brief		set 'k' hash's 'f' filed value with 'v' if not exists
+	*@command	HSETNX [key] [field] [value]
+	*@return	0 succ, -1 failed, 1 failed and field exists
+	*/
+	int HSetNx(Key k, Field f, Value v);
+
 };
 
+//ZSet : [float]score1-value1  score2-value2...
+//sorted set
+class RedZSet : public Container {
+
+};
 
 //used to transfer ESC char
 std::string transferEsc(std::string str);
