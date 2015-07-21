@@ -215,9 +215,35 @@ public:
 
 };
 
-//ZSet : [float]score1-value1  score2-value2...
+//ZSet : [double]score1-value1  score2-value2...
 //sorted set
 class RedZSet : public Container {
+public:
+	typedef		std::string									Key;
+	typedef		double										Score;
+	typedef		std::string									Member;
+	typedef		std::vector< Member >						MemberSet;
+	typedef		MemberSet::iterator							MemberSetItr;
+	typedef		std::vector< std::pair< Score, Member> >	SMSet;
+	typedef		SMSet::iterator								SMSetItr;
+public:
+	RedZSet(Redis* redis) : Container(redis) {
+	
+	}
+public:
+	/*
+	*@brief		add multi socre-member to 'k' ZSet
+	*@command	ZADD [key] [score1] [memeber1] [score2] [member2] ...
+	*@return	0 succ, else -1
+	*@version	not supported where redis version below 2.4.0
+	*/
+	int ZAdd(Key k, SMSet& sms);
+	/*
+	*@brief		add one socre-member to 'k' ZSet
+	*@command	ZADD [key] [score] [member] 	
+	*@return	0 succ, else -1
+	*/
+	int ZAdd(Key k, Score s, Member m);
 
 };
 

@@ -2,6 +2,7 @@
 #include "redis.h"
 #include "log.h"
 
+#include <sstream>
 
 //throw the errors
 int RedString::Set(Key k, Value v) {
@@ -339,6 +340,44 @@ int RedHash::HSetNx(Key k, Field f, Value v) {
 	freeReplyObject(reply);
 	return ret;
 }
+
+//RedZSet class implementation
+
+//throw error
+int RedZSet::ZAdd(Key k, SMSet& sms) {
+	if (!sms.size()) return -2;
+	std::stringstream ss;
+	ss << "ZADD " << k << " ";
+	SMSetItr itr = sms.begin();
+	for (; itr != sms.end(); ++itr) {
+		ss << itr->first << " " << itr->second << " ";
+	}
+	std::string cmd = ss.str();
+	ss.str("");
+	ss.clear();
+	MLOG->Debug("ZADD CMD is |%s|", cmd.c_str());
+	redisReply* reply = (redisReply*)redis_->execute(cmd.c_str());
+	int ret = -1;
+	if (reply) {
+		ret = 0;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
+//throw error
+int RedZSet::ZAdd(Key k, Score s, Member m) {
+	//XXX 
+	redisReply* reply = (redisReply*)redis_->execute("ZADD %s %f %s", 
+			k.c_str(), s, m.c_str());
+	int ret = -1;
+	if (reply) {
+		ret = 0;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
 
 //global funcs
 std::string transferEsc(std::string str) {
