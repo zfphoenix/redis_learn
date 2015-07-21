@@ -3,6 +3,7 @@
 #include "log.h"
 
 #include <sstream>
+#include <cstdlib>
 
 //throw the errors
 int RedString::Set(Key k, Value v) {
@@ -376,6 +377,171 @@ int RedZSet::ZAdd(Key k, Score s, Member m) {
 	}
 	freeReplyObject(reply);
 	return ret;
+}
+
+size_t RedZSet::ZCard(Key k) {
+	redisReply* reply = (redisReply*)redis_->execute("ZCARD %s", k.c_str());
+	size_t count = 0;
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type)
+			count = reply->integer;
+	}
+	freeReplyObject(reply);
+	return count;
+}
+
+size_t RedZSet::ZCount(Key k, Score min, Score max) {
+	redisReply* reply = (redisReply*)redis_->execute("ZCOUNT %s %f %f", k.c_str(), min, max);
+	size_t count = 0;
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type)
+			count = reply->integer;
+	}
+	freeReplyObject(reply);
+	return count;
+}
+
+//throw error
+int RedZSet::ZIncrBy(Key k, Score incr, Member mb) {
+	if (!incr) return -2;
+	redisReply* reply = (redisReply*)redis_->execute("ZINCRBY %s %f %s",
+			k.c_str(), incr, mb.c_str());
+	int ret = -1;
+	if (reply) {
+		ret = 0;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
+RedZSet::MemberSet RedZSet::ZRange(Key k, int start, int end, bool reverse) {
+	std::string cmd;
+	if (reverse)
+		cmd = "ZREVRANGE";
+	else 
+		cmd = "ZRANGE";
+	redisReply* reply = (redisReply*)redis_->execute("%s %s %d %d",
+			cmd.c_str(), k.c_str(), start, end);
+	MemberSet ms;
+	if (reply) {
+		if (REDIS_REPLY_ARRAY == reply->type &&
+				reply->elements) {
+			for (size_t i = 0; i < reply->elements; i++) {
+				ms.push_back(reply->element[i]->str);
+				MLOG->Debug("[member] %s",reply->element[i]->str);
+			}
+		}
+	}
+	freeReplyObject(reply);
+	return ms;
+}
+
+RedZSet::MemberSet RedZSet::ZRangeByScore(Key k, Score min, Score max, bool reverse) {
+	std::string cmd;
+	if (reverse)
+		cmd = "ZREVRANGEBYSCORE";
+	else 
+		cmd = "ZRANGEBYSCORE";
+	redisReply* reply = (redisReply*)redis_->execute("%s %s %f %f",
+			cmd.c_str(), k.c_str(), min, max);
+	MemberSet ms;
+	if (reply) {
+		if (REDIS_REPLY_ARRAY == reply->type &&
+				reply->elements) {
+			for (size_t i = 0; i < reply->elements; i++) {
+				ms.push_back(reply->element[i]->str);
+				MLOG->Debug("[member] %s",reply->element[i]->str);
+			}
+		}
+	}
+	freeReplyObject(reply);
+	return ms;
+}
+
+RedZSet::SMSet RedZSet::ZRangeWithScore(Key k, int start, int end, bool reverse) {
+	std::string cmd;
+	if (reverse)
+		cmd = "ZREVRANGE";
+	else 
+		cmd = "ZRANGE";
+	redisReply* reply = (redisReply*)redis_->execute("%s %s %d %d withscores",
+			cmd.c_str(), k.c_str(), start, end);
+	SMSet sms;
+	if (reply) {
+		if (REDIS_REPLY_ARRAY == reply->type &&
+				reply->elements && 0 == reply->elements%2)
+			for (size_t i = 0; i < reply->elements; ) {
+				//XXX
+				sms.push_back(std::make_pair< Score, Member >(atof(reply->element[i]->str),
+							reply->element[i+1]->str));
+				MLOG->Debug("[member] %s:%s",reply->element[i]->str,reply->element[i+1]->str);
+				i+=2;
+			}
+	}
+	freeReplyObject(reply);
+	return sms;
+}
+
+long long RedZSet::ZRank(Key k, Member m, bool reverse) {
+	std::string cmd;
+	if (reverse) {
+		cmd = "ZREVRANK";
+	} else {
+		cmd = "ZRANK";
+	}
+	long long rank = -1;
+	redisReply* reply = (redisReply*)redis_->execute("%s %s %s", 
+			cmd.c_str(), k.c_str(), m.c_str());
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type) {
+			rank = reply->integer;
+		}
+	}
+	freeReplyObject(reply);
+	return rank;
+}
+
+//throw error
+int RedZSet::ZRem(Key k, Member m) {
+	redisReply* reply = (redisReply*)redis_->execute("ZREM %s %s", k.c_str(), m.c_str());
+	int ret = -1;
+	if (reply) {
+		ret = 0;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
+//throw error
+int RedZSet::ZRem(Key k, MemberSet& ms) {
+	if (!ms.size()) return -2;
+	std::string cmd("ZREM ");
+	cmd.append(k).append(" ");
+	MemberSetItr itr = ms.begin();
+	for (; itr != ms.end(); ++itr) {
+		std::string str;
+		str = transferEsc(*itr);
+		cmd.append(str).append(" ");
+	}
+	MLOG->Debug("ZREM cmd is |%s|", cmd.c_str());
+	int ret = -1;
+	redisReply* reply = (redisReply*)redis_->execute(cmd.c_str());
+	if (reply) {
+		ret = 0;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
+std::string RedZSet::ZScore(Key k, Member m){
+	std::string score;
+	redisReply* reply = (redisReply*)redis_->execute("ZSCORE %s %s", k.c_str(), m.c_str());
+	if (reply) {
+		if (REDIS_REPLY_STRING == reply->type)
+			score = std::string(reply->str);
+	}
+	freeReplyObject(reply);
+	return score;
 }
 
 

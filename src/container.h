@@ -244,7 +244,68 @@ public:
 	*@return	0 succ, else -1
 	*/
 	int ZAdd(Key k, Score s, Member m);
-
+	/*
+	*@brief		return fieled count of one ZSET
+	*@command	ZCARD [key]
+	*@return	count of field
+	*/
+	size_t ZCard(Key k);
+	/*
+	*@brief		return members' count which score in range of [min, max]
+	*@command	ZCOUNT [key] [min] [max]
+	*@return	count of members which statisfied
+	*/
+	size_t ZCount(Key k, Score min, Score max);
+	/*
+	*@brief		increase filed's value with specifed increment
+	*@command	ZINCRBY [key] [increment] [member]
+	*@return	0 succ, else -1
+	*/
+	int ZIncrBy(Key k, Score incr, Member mb);
+	/*
+	*@brief		return member list which rank in [start] [top] 
+	**			sorted increased 
+	*@command	ZRANGE [key] [index_start] [index_end]
+	*@return	memberset with reply, else empty memberset
+	*/
+	MemberSet ZRange(Key k, int start, int end, bool reverse = false);
+	/*
+	*@brief		return member list which rank in [min, max]
+	*@command	ZRANGEBYSCORE [key] [index_start] [index_end]
+	*@return	memberset with reply, else empty memberset
+	*@caution	if reverse if ture, min should greater than max
+	*/
+	MemberSet ZRangeByScore(Key k, Score min, Score max, bool reverse = false);
+	/*
+	*@brief		return pair array [score-member]
+	*@command	ZRANGE [key] [index_start] [index_end] withscores
+	*return		SMSet with reply or empty set
+	*/
+	SMSet ZRangeWithScore(Key k, int start, int end, bool reverse = false);
+	/*
+	*@brief		return the member's rank in the sorted set
+	*@command	ZRANK [key] [member]
+	*@return	greater than or equal 0 is succ, else not exists specified [member]
+	*/
+	long long ZRank(Key k, Member m, bool reverse = false);
+	/*
+	*@brief		remove member from k sorted-set
+	*@command	ZREM [key] [member]
+	*@return	0 succ, else -1
+	*/
+	int ZRem(Key k, Member m);
+	/*
+	*@brief		remove multi members from k sorted-set
+	*@command	ZREM [key] [member1] [member2] 
+	*@return	0 succ, else -1
+	*/
+	int ZRem(Key k, MemberSet& ms);
+	/*
+	*@brief		return member's score if exist with string-type
+	*@command	ZSCORE [key] [member]
+	*@return	string with reply or empty 
+	*/
+	std::string ZScore(Key k, Member m);
 };
 
 //used to transfer ESC char
