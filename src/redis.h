@@ -39,7 +39,8 @@ public:
 	bool reconnect() {
 		redisFree(connect_);
 		connect_ = NULL;
-		return connect();
+		connect();
+		return select();
 	}
 
 	bool auth(std::string pwd) ;

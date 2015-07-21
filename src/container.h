@@ -11,7 +11,6 @@ extern "C" {
 
 class Redis;
 
-
 class Container {
 public:
 	Container(Redis* redis):redis_(redis) {
@@ -73,24 +72,56 @@ public:
 	*@return	0 succ, else  -1
 	*/
 	int SetNx(Key k, Value v);
-	//multi set
+	/*
+	 *@brief	multi set
+	 *@command	MSET [key1] [value1] [key2] [value2] ....
+	 @return	0 succ, else -1
+	 **/	
 	int MSet(KVSet& kvs);
-	//multi get
+	/*
+	 *@brief	multi get
+	 *@command	MGET [key1] [key2] [key3] ...
+	 *@return	ValueSet with reply succ ,else empty set
+	 */
 	ValueSet MGet(KeySet& ks);
-	//multi set if not exists
+	/*
+	*@brief		multi set if not exists
+	*@command	MSETNX [key1] [value1] [key2] [value2] ...
+	*@return	0 succ, else -1
+	*/
 	int MSetNx(KVSet& kvs);
-	//if k's value exists, update value with new_v
-	//else set [k - new_v]
+	/*
+	**@brief	if k's value exists, update value with new_v
+	**			else set [k - new_v]
+	*@command	GETSET [key] [value]
+	*@retrun	0 succ, else -1
+	*/
 	int GetSet(Key k, Value new_v);
-	//change key's value if exist
-	//and replace part value with 'replace' string start from 
-	//index-th char
+	/*
+	*@breif		change key's value if exist
+	**			and replace part value with 'replace' string start from 
+	**			index-th char
+	*@cmmand	SETRANGE [key] [offset] [value]
+	*@return	0 succ, else -1
+	*/
 	int SetRange(Key k, uint32_t index, Value replace);
-	//return part key's value which in range[start, end]
+	/*
+	*@brief		return part key's value which in range[start, end]
+	*@command	SETRANGE [key] [start] [end]
+	*@return	Value with reply succ, else empty value
+	*/
 	Value GetRange(Key k, uint32_t start, uint32_t end);
-	//update k'value and append value with 'append'
+	/*
+	*@brief		update k'value and append value with 'append'
+	*@command	APPEND [key] [value]
+	*@return	0 succ, else -1
+	*/
 	int Append(Key k, Value append);
-	//return key's value's length,unit is byte
+	/*
+	*@brief		return key's value's length,unit is byte
+	*@command	STRLEN [key]
+	*@return	len (ne 0) succ, else -1
+	*/
 	size_t StrLen(Key k);
 	//!!!
 	//!!!
@@ -122,5 +153,10 @@ public:
 	typedef Dict									 FVSet;
 	typedef DictItr									 FVSetItr;
 };
+
+
+//used to transfer ESC char
+std::string transferEsc(std::string str);
+
 
 #endif
