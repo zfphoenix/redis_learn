@@ -49,6 +49,8 @@ inline void Redis::release(redisReply* reply_) {
 	freeReplyObject(reply_);
 }
 
+//while redisContext returns error, the connection would be disconnected
+//and always reconnect to redis-server when error detected;
 void* Redis::execute(const char* format,...) {
 	va_list ap;
 	void* reply = NULL;
@@ -59,4 +61,28 @@ void* Redis::execute(const char* format,...) {
 	va_end(ap);
 	return reply;
 }
+
+//[expire] operation will be replaced
+bool Redis::expire(Key k, ExpireTime ept) {
+	redisReply* reply = (redisReply*)execute("EXPIRE %s %d", k.c_str(), ept);
+	bool ret = false;
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type && 1 == reply->integer)
+			ret = true;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
+bool Redis::exists(Key k) {
+	redisReply* reply = (redisReply*)execute("EXISTS %s", k.c_str());
+	bool ret = false;
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type && 1 == reply->integer)
+			ret = true;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
+
 

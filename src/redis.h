@@ -3,6 +3,7 @@
 #define _RED_REDIS_H_
 #include <iostream>
 #include <cassert>
+#include <string>
 extern "C" {
 #include <stdint.h>
 #include <hiredis/hiredis.h>
@@ -26,6 +27,9 @@ public:
 		redisFree(connect_);
 		connect_ = NULL;
 	}
+public:
+	typedef		std::string		Key;
+	typedef		uint32_t		ExpireTime;
 public:
 	bool connect() {
 		connect_ = redisConnect(ip_.c_str(), port_);
@@ -54,7 +58,10 @@ public:
 	void release(redisReply*);
 
 	void* execute(const char* format,...);
-	
+	//set expire time with key
+	bool expire(Key k, ExpireTime ept);
+
+	bool exists(Key k);
 private:
 	std::string   ip_;
 	uint32_t	  port_;
