@@ -85,4 +85,14 @@ bool Redis::exists(Key k) {
 	return ret;
 }
 
+bool Redis::expireAt(Key k, uint32_t dead_tm) {
+	redisReply* reply = (redisReply*)execute("EXPIREAT %s %d", k.c_str(), dead_tm);
+	bool ret = false;
+	if (reply) {
+		if (REDIS_REPLY_INTEGER == reply->type && 1 == reply->integer)
+			ret = true;
+	}
+	freeReplyObject(reply);
+	return ret;
+}
 

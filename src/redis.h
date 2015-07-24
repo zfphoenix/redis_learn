@@ -61,6 +61,7 @@ public:
 	//set expire time with key
 	bool expire(Key k, ExpireTime ept);
 
+	bool expireAt(Key k, uint32_t dead_tm);
 	bool exists(Key k);
 private:
 	std::string   ip_;
