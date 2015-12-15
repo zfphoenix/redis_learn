@@ -10,7 +10,9 @@ inline bool IsDigit(char c) {
 inline bool IsLetter(char c) {
 	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 }
-inline char DecodeChar(char a, char b) { char c = 0;
+
+inline char DecodeChar(char a, char b) { 
+    char c = 0;
 	if (IsDigit(a)) {
 		c += (a - '0')*16;
 	} else {
