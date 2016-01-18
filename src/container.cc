@@ -7,7 +7,9 @@
 
 //throw the errors
 int RedString::Set(Key k, Value v) {
-	redisReply* reply = (redisReply*)redis_->execute("SET %s %s", k.c_str(), v.c_str()); int ret = -1; if (reply) {
+	redisReply* reply = (redisReply*)redis_->execute("SET %s %s", k.c_str(), v.c_str()); 
+    int ret = -1; 
+    if (reply) {
 		MLOG->Debug("reply type is %d", reply->type);
 		if (reply->type == REDIS_REPLY_STATUS &&
 				std::string(reply->str) == "OK")
